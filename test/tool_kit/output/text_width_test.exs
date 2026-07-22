@@ -58,5 +58,11 @@ defmodule ToolKit.Output.TextWidthTest do
       assert TextWidth.truncate("hello", 3) == "hel"
       assert TextWidth.truncate("hello", 2) == "he"
     end
+
+    test "very small widths never exceed the budget for fullwidth characters" do
+      assert TextWidth.truncate("あい", 3) == "あ"
+      assert TextWidth.truncate("あい", 2) == "あ"
+      assert TextWidth.truncate("あい", 1) == ""
+    end
   end
 end

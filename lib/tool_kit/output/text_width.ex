@@ -5,6 +5,9 @@ defmodule ToolKit.Output.TextWidth do
   日本語環境での表示幅を正確に計算するため、CJK 文字、ひらがな、カタカナ、
   全角記号、ハングルを 2 文字幅として扱う。厳密な East Asian Width 準拠では
   なく、日本語環境での一般的な表示に最適化された簡易版。
+
+  制限: 上記の範囲以外(絵文字、アラビア文字、ラテン拡張など)はすべて
+  1 幅として扱うため、端末で 2 幅表示される絵文字などは正確に扱えない。
   """
 
   @doc """
@@ -72,26 +75,31 @@ defmodule ToolKit.Output.TextWidth do
     end
   end
 
+  # "..." を置く余地がない幅では、表示幅ベースでそのまま切る
   defp truncate_by_display_width(string, max_width) when max_width <= 3 do
-    String.slice(string, 0, max_width)
+    take_by_display_width(string, max_width)
   end
 
   defp truncate_by_display_width(string, max_width) do
+    # "..." の 3 幅分を確保して切る
+    take_by_display_width(string, max_width - 3) <> "..."
+  end
+
+  defp take_by_display_width(string, budget) do
     {kept, _width} =
       string
       |> String.graphemes()
       |> Enum.reduce_while({[], 0}, fn grapheme, {acc, acc_width} ->
         new_width = acc_width + grapheme_display_width(grapheme)
 
-        # "..." の 3 幅分を確保して切る
-        if new_width + 3 > max_width do
+        if new_width > budget do
           {:halt, {acc, acc_width}}
         else
           {:cont, {[grapheme | acc], new_width}}
         end
       end)
 
-    kept |> Enum.reverse() |> Enum.join() |> Kernel.<>("...")
+    kept |> Enum.reverse() |> Enum.join()
   end
 
   defp grapheme_display_width(grapheme) do
@@ -106,7 +114,7 @@ defmodule ToolKit.Output.TextWidth do
   defp codepoint_display_width(codepoint) when codepoint <= 0x1F, do: 0
   # ASCII
   defp codepoint_display_width(codepoint) when codepoint <= 0x7F, do: 1
-  # 制御文字
+  # C1 制御文字（0x80-0x9F）
   defp codepoint_display_width(codepoint) when codepoint <= 0x9F, do: 0
   # CJK系全般
   defp codepoint_display_width(codepoint) when codepoint >= 0x3000 and codepoint <= 0x9FFF,

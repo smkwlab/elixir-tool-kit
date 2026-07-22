@@ -58,6 +58,13 @@ defmodule ToolKit.Output.TableTest do
       refute rendered =~ "あいうえお"
     end
 
+    test "truncated fullwidth cells are padded back to the column width" do
+      # truncate("あいうえお", 6) は "あ..."（幅 5）になり、残り 1 幅がパディングされる
+      rendered = Table.render(["Header"], [["あいうえお"]], max_widths: %{0 => 6})
+
+      assert rendered == Enum.join(["Header", "------", "あ... "], "\n")
+    end
+
     test "empty rows render header and separator only" do
       assert Table.render(["A"], []) == "A\n-"
     end
