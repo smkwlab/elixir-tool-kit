@@ -1,0 +1,23 @@
+registry-manager archive - 卒業済みリポジトリを archive（open PR クローズ → archive → archived_at 記録）。--graduated で名簿突合の一括、--list で候補一覧のみ、--dry-run で副作用なしのシミュレーション、-i で 1 件ずつ確認しながら実行
+
+使用方法:
+  registry-manager archive <repo_name>
+  registry-manager archive --graduated [--list | --dry-run | -i]
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+      --graduated  名簿突合で卒業済み学生の登録リポジトリを一括対象にする
+      --list  候補一覧を判定理由つきで表示のみ（実行しない）
+  -d, --dry-run  実際の変更を行わない
+  -i, --interactive  候補を 1 件ずつ確認しながら archive（y/n/a/q）
+例:
+  registry-manager archive k21rs001-sotsuron
+  registry-manager archive --graduated --list
+  registry-manager archive --graduated --dry-run
+  registry-manager archive --graduated
+  registry-manager archive --graduated -i
+

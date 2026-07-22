@@ -1,0 +1,15 @@
+registry-manager update - 既存リポジトリ情報を更新
+
+使用方法:
+  registry-manager update <repo_name> <field> <value>
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+  -d, --dry-run  実際の変更を行わない
+例:
+  registry-manager update k21rs001-fit26 review_flow true
+

@@ -1,0 +1,16 @@
+registry-manager init - レジストリデータリポジトリの bootstrap（private repo 作成・data/registry.json と README の初期投入・config 生成、冪等）
+
+使用方法:
+  registry-manager init [owner/repo]
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+  -f, --force  確認をスキップ／既存設定を上書き
+例:
+  registry-manager init
+  registry-manager init smkwlab/thesis-student-registry --org smkwlab
+

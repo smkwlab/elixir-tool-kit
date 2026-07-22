@@ -1,0 +1,33 @@
+registry-manager list - リポジトリ一覧・状況を表示
+
+使用方法:
+  registry-manager list [filter]
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+  -l, --long  詳細テーブル表示
+      --show-type  リポジトリタイプ列を表示
+  -p, --show-protection  保護状態列を表示
+      --no-names  学生名を非表示
+  -a, --activity  リポジトリの最終活動時刻を表示
+  -o, --owner-activity  オーナーの活動時刻を表示
+      --show-registry-updated  registry_updated_at 列を表示
+      --show-both-timestamps  リポジトリ/レジストリ両方の時刻列を表示
+      --no-cache  キャッシュを使用しない
+      --format table|csv|json  出力形式
+  -T, --type wr|ise|sotsuron|master|thesis|latex|poster|sotsuron-report|other  リポジトリタイプでフィルタ
+      --sort name|time  ソートキー（デフォルト: name）
+  -t  --sort time の短縮
+  -r, --reverse  ソート順を反転
+  -s, --show-student-id  学生IDを表示
+例:
+  registry-manager list
+  registry-manager list --long
+  registry-manager list --type wr --long
+  registry-manager list --sort time -r
+  registry-manager list --format csv
+
