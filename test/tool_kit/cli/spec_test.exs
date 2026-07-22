@@ -69,6 +69,11 @@ defmodule ToolKit.CLI.SpecTest do
       assert {:jobs, :integer} in Spec.strict_switches(spec)
       assert Spec.render_command_help(spec, "run") =~ "--jobs VALUE"
       assert Spec.validate_opts(spec, "run", jobs: 4) == :ok
+
+      # 整数でない値の拒否は OptionParser(strict)の責務で、
+      # Parser がパース段階のエラーに変換する
+      assert {:error, message} = ToolKit.CLI.Parser.parse(spec, ["run", "--jobs", "four"])
+      assert message =~ "--jobs"
     end
 
     test "command option overrides replace values and doc", %{spec: spec} do
