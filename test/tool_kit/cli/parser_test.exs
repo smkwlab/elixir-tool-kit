@@ -8,6 +8,29 @@ defmodule ToolKit.CLI.ParserTest do
     %{spec: Fixture.spec()}
   end
 
+  describe "default command" do
+    test "empty argv falls back to the default command", %{spec: spec} do
+      assert Parser.parse(spec, [], default_command: "list") == {:command, "list", [], []}
+    end
+
+    test "options are validated against the default command", %{spec: spec} do
+      assert {:command, "list", [], [long: true]} =
+               Parser.parse(spec, ["--long"], default_command: "list")
+
+      assert {:error, message} = Parser.parse(spec, ["--force"], default_command: "list")
+      assert message =~ "--force"
+    end
+
+    test "--help wins over the default command", %{spec: spec} do
+      assert Parser.parse(spec, ["--help"], default_command: "list") == :help
+    end
+
+    test "an explicit command is unaffected", %{spec: spec} do
+      assert {:command, "validate", [], []} =
+               Parser.parse(spec, ["validate"], default_command: "list")
+    end
+  end
+
   describe "help short-circuit" do
     test "no arguments renders global help", %{spec: spec} do
       assert Parser.parse(spec, []) == :help

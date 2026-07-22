@@ -26,9 +26,17 @@ defmodule ToolKit.CLI.Parser do
           | {:error, String.t()}
           | {:command, String.t(), [String.t()], keyword()}
 
-  @doc "引数リストを spec に基づいてパースする"
-  @spec parse(Spec.t(), [String.t()]) :: result()
-  def parse(%Spec{} = spec, args) do
+  @doc """
+  引数リストを spec に基づいてパースする。
+
+  ## オプション
+
+  - `:default_command` — 位置引数が空のとき(`--help` でない場合)に
+    このコマンドとして扱う。オプション検証も default コマンドに対して行う。
+    未指定時は従来どおり `:help` を返す
+  """
+  @spec parse(Spec.t(), [String.t()], default_command: String.t()) :: result()
+  def parse(%Spec{} = spec, args, parse_opts \\ []) do
     {opts, argv, invalid} =
       OptionParser.parse(args, strict: Spec.strict_switches(spec), aliases: Spec.aliases(spec))
 
@@ -40,7 +48,7 @@ defmodule ToolKit.CLI.Parser do
         parse_help_target(spec, argv)
 
       true ->
-        parse_command(spec, argv, opts)
+        parse_command(spec, argv, opts, Keyword.get(parse_opts, :default_command))
     end
   end
 
@@ -54,9 +62,12 @@ defmodule ToolKit.CLI.Parser do
 
   defp parse_help_target(_spec, _), do: :help
 
-  defp parse_command(_spec, [], _opts), do: :help
+  defp parse_command(_spec, [], _opts, nil), do: :help
 
-  defp parse_command(spec, [first | rest], opts) do
+  defp parse_command(spec, [], opts, default_command),
+    do: parse_command(spec, [default_command], opts, nil)
+
+  defp parse_command(spec, [first | rest], opts, _default_command) do
     case Spec.validate_opts(spec, first, opts) do
       :ok -> {:command, first, rest, opts}
       {:error, _} = error -> error
