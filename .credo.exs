@@ -143,7 +143,6 @@
           {Credo.Check.Refactor.VariableRebinding, false},
           {Credo.Check.Warning.LeakyEnvironment, false},
           {Credo.Check.Warning.MapGetUnsafePass, false},
-          {Credo.Check.Warning.MixEnv, false},
           {Credo.Check.Warning.UnsafeToAtom, false}
 
           #
