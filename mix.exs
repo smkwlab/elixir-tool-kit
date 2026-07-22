@@ -1,0 +1,38 @@
+defmodule ToolKit.MixProject do
+  use Mix.Project
+
+  def project do
+    [
+      app: :tool_kit,
+      version: "0.1.0",
+      elixir: "~> 1.17",
+      start_permanent: Mix.env() == :prod,
+      test_coverage: [
+        summary: [threshold: 80]
+      ],
+      dialyzer: [
+        plt_add_apps: [:mix],
+        flags: [:error_handling, :underspecs],
+        ignore_warnings: "dialyzer.ignore-warnings"
+      ],
+      deps: deps()
+    ]
+  end
+
+  # 純ライブラリ: supervision tree を持たない(escript への組み込みを単純に保つ)
+  def application do
+    [
+      extra_applications: [:logger]
+    ]
+  end
+
+  defp deps do
+    [
+      {:jason, "~> 1.4"},
+      {:yaml_elixir, "~> 2.9"},
+      {:req, "~> 0.4"},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+    ]
+  end
+end
