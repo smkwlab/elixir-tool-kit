@@ -1,0 +1,20 @@
+registry-manager propagate-workflow - ワークフロー更新をドラフトブランチ階層に伝播（main → 0th-draft → … の順でマージ）
+
+使用方法:
+  registry-manager propagate-workflow <repo_name>
+  registry-manager propagate-workflow --all [--type TYPE]
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+      --all  全リポジトリを対象にする
+  -T, --type wr|ise|sotsuron|master|thesis|latex|poster|sotsuron-report|other  リポジトリタイプでフィルタ
+      --from-template  テンプレートから最新ワークフローを適用してから伝播
+  -d, --dry-run  実際の変更を行わない
+例:
+  registry-manager propagate-workflow k92rs001-sotsuron
+  registry-manager propagate-workflow --all --type thesis --dry-run
+

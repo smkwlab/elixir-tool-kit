@@ -1,0 +1,23 @@
+registry-manager pr-status - 各リポジトリの Pull Request 状態を表示
+
+使用方法:
+  registry-manager pr-status [filter]
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+      --format table|csv|json  出力形式
+  -T, --type wr|ise|sotsuron|master|thesis|latex|poster|sotsuron-report|other  リポジトリタイプでフィルタ
+      --state open|closed|all  PR 状態でフィルタ
+      --review-requested  レビューリクエスト保留中の PR のみ表示
+      --sort repository|updated|created  ソートキー
+  -r, --reverse  ソート順を反転
+      --no-cache  キャッシュを使用しない
+例:
+  registry-manager pr-status
+  registry-manager pr-status --review-requested
+  registry-manager pr-status --sort updated -r
+

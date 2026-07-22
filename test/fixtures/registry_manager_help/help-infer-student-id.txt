@@ -1,0 +1,16 @@
+registry-manager infer-student-id - github_username から CSV を元に学生 ID を推論して設定
+
+使用方法:
+  registry-manager infer-student-id <repo_name>
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+  -d, --dry-run  実際の変更を行わない
+例:
+  registry-manager infer-student-id 91rs044-wr
+  registry-manager infer-student-id demouser-wr --dry-run
+

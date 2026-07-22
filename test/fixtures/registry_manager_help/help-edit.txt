@@ -1,0 +1,17 @@
+registry-manager edit - リポジトリの GitHub オーナーを編集
+
+使用方法:
+  registry-manager edit <repo_name>
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+      --add-owner VALUE  オーナーを追加
+      --remove-owner VALUE  オーナーを削除
+      --set-owners VALUE  オーナーを設定（カンマ区切り）
+例:
+  registry-manager edit k21rs001-sotsuron --add-owner mentor-user
+

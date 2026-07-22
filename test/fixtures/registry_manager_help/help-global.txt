@@ -1,0 +1,105 @@
+registry-manager - 学生リポジトリレジストリ管理ツール
+
+使用方法:
+  registry-manager <command> [options]
+  registry-manager <command> --help
+
+コマンド:
+  init [owner/repo]
+      レジストリデータリポジトリの bootstrap（private repo 作成・data/registry.json と README の初期投入・config 生成、冪等）
+      オプション: --force
+
+  add <repo_name> [--type <repo_type>]
+  add <repo_name> <student_id> <repo_type>
+      リポジトリ情報を新規登録（1引数: 推論形式・推奨 / 3引数: 明示的形式）
+      オプション: --dry-run --type --review-flow
+
+  update <repo_name> <field> <value>
+      既存リポジトリ情報を更新
+      オプション: --dry-run
+
+  remove <repo_name>
+      リポジトリ情報をレジストリから削除
+      オプション: --dry-run --delete-github-repo
+
+  protect <repo_name>
+      ブランチ保護設定完了をマーク
+      オプション: --dry-run
+
+  list [filter]
+      リポジトリ一覧・状況を表示
+      オプション: --long --show-type --show-protection --no-names --activity --owner-activity --show-registry-updated --show-both-timestamps --no-cache --format --type --sort -t --reverse --show-student-id
+
+  validate [repo_name]
+      データの整合性を検証（全件または単一リポジトリ）
+      オプション: --format
+
+  cache [status|clear|refresh] [repo_name]
+      キャッシュ管理（リポジトリ名指定でそのリポジトリのみ対象）
+      オプション: --force
+
+  infer-student-id <repo_name>
+      github_username から CSV を元に学生 ID を推論して設定
+      オプション: --dry-run
+
+  edit <repo_name>
+      リポジトリの GitHub オーナーを編集
+      オプション: --add-owner --remove-owner --set-owners
+
+  pr-status [filter]
+      各リポジトリの Pull Request 状態を表示
+      オプション: --format --type --state --review-requested --sort --reverse --no-cache
+
+  propagate-workflow <repo_name>
+  propagate-workflow --all [--type TYPE]
+      ワークフロー更新をドラフトブランチ階層に伝播（main → 0th-draft → … の順でマージ）
+      オプション: --all --type --from-template --dry-run
+
+  archive <repo_name>
+  archive --graduated [--list | --dry-run | -i]
+      卒業済みリポジトリを archive（open PR クローズ → archive → archived_at 記録）。--graduated で名簿突合の一括、--list で候補一覧のみ、--dry-run で副作用なしのシミュレーション、-i で 1 件ずつ確認しながら実行
+      オプション: --graduated --list --dry-run --interactive
+
+グローバルオプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+例:
+  registry-manager init
+  registry-manager init smkwlab/thesis-student-registry --org smkwlab
+  registry-manager add k21rs001-sotsuron
+  registry-manager add myorg/k21rs001-wr
+  registry-manager add k21rs001-jsai2026 --type other
+  registry-manager add k21rs001-fit26 --type latex --review-flow
+  registry-manager add k21rs001-sotsuron k21rs001 sotsuron
+  registry-manager update k21rs001-fit26 review_flow true
+  registry-manager remove k21rs001-sotsuron
+  registry-manager remove k21rs001-sotsuron --delete-github-repo
+  registry-manager protect k21rs001-sotsuron
+  registry-manager list
+  registry-manager list --long
+  registry-manager list --type wr --long
+  registry-manager list --sort time -r
+  registry-manager list --format csv
+  registry-manager validate
+  registry-manager validate k21rs001-sotsuron
+  registry-manager validate --format json
+  registry-manager cache status
+  registry-manager cache clear
+  registry-manager cache status k21rs001-sotsuron
+  registry-manager infer-student-id 91rs044-wr
+  registry-manager infer-student-id demouser-wr --dry-run
+  registry-manager edit k21rs001-sotsuron --add-owner mentor-user
+  registry-manager pr-status
+  registry-manager pr-status --review-requested
+  registry-manager pr-status --sort updated -r
+  registry-manager propagate-workflow k92rs001-sotsuron
+  registry-manager propagate-workflow --all --type thesis --dry-run
+  registry-manager archive k21rs001-sotsuron
+  registry-manager archive --graduated --list
+  registry-manager archive --graduated --dry-run
+  registry-manager archive --graduated
+  registry-manager archive --graduated -i
+

@@ -1,0 +1,22 @@
+registry-manager add - リポジトリ情報を新規登録（1引数: 推論形式・推奨 / 3引数: 明示的形式）
+
+使用方法:
+  registry-manager add <repo_name> [--type <repo_type>]
+  registry-manager add <repo_name> <student_id> <repo_type>
+
+オプション:
+  -h, --help  このヘルプを表示
+  -v, --verbose  詳細ログを表示
+      --registry-repo VALUE  registry_repo を上書き（owner/repo 形式）
+  -c, --config VALUE  設定ファイルのパスを上書き
+      --org VALUE  対象の GitHub organization
+  -d, --dry-run  実際の変更を行わない
+  -T, --type wr|ise|sotsuron|master|thesis|latex|poster|sotsuron-report|other  リポジトリタイプの推論を上書き（1引数形式のみ。名前に規則がない場合に使用）
+      --review-flow  review_flow を明示指定（--no-review-flow で false。省略時はタイプ由来の既定値）
+例:
+  registry-manager add k21rs001-sotsuron
+  registry-manager add myorg/k21rs001-wr
+  registry-manager add k21rs001-jsai2026 --type other
+  registry-manager add k21rs001-fit26 --type latex --review-flow
+  registry-manager add k21rs001-sotsuron k21rs001 sotsuron
+
