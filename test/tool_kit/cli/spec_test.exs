@@ -1,6 +1,7 @@
 defmodule ToolKit.CLI.SpecTest do
   use ExUnit.Case, async: true
 
+  alias ToolKit.CLI.Parser
   alias ToolKit.CLI.Spec
   alias ToolKit.Test.RegistryManagerSpecFixture, as: Fixture
 
@@ -72,7 +73,7 @@ defmodule ToolKit.CLI.SpecTest do
 
       # 整数でない値の拒否は OptionParser(strict)の責務で、
       # Parser がパース段階のエラーに変換する
-      assert {:error, message} = ToolKit.CLI.Parser.parse(spec, ["run", "--jobs", "four"])
+      assert {:error, message} = Parser.parse(spec, ["run", "--jobs", "four"])
       assert message =~ "--jobs"
     end
 
