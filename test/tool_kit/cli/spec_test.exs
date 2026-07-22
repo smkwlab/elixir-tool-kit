@@ -1,6 +1,7 @@
 defmodule ToolKit.CLI.SpecTest do
   use ExUnit.Case, async: true
 
+  alias ToolKit.CLI.Parser
   alias ToolKit.CLI.Spec
   alias ToolKit.Test.RegistryManagerSpecFixture, as: Fixture
 
@@ -43,6 +44,37 @@ defmodule ToolKit.CLI.SpecTest do
       assert_raise KeyError, fn ->
         Spec.options_for(spec, %{options: [{:nonexistent_option, %{values: ["x"]}}]})
       end
+    end
+
+    test "integer options derive strict switches and render a VALUE placeholder" do
+      spec = %Spec{
+        tool_name: "demo",
+        tool_summary: "demo tool",
+        option_catalog: %{
+          help: %{type: :boolean, alias: :h, values: nil, doc: "help"},
+          jobs: %{type: :integer, alias: nil, values: nil, doc: "並列数"}
+        },
+        global_option_names: [:help],
+        commands: [
+          %{
+            name: "run",
+            aliases: [],
+            usage: ["run"],
+            summary: "run",
+            options: [:jobs],
+            examples: ["run --jobs 4"]
+          }
+        ]
+      }
+
+      assert {:jobs, :integer} in Spec.strict_switches(spec)
+      assert Spec.render_command_help(spec, "run") =~ "--jobs VALUE"
+      assert Spec.validate_opts(spec, "run", jobs: 4) == :ok
+
+      # 整数でない値の拒否は OptionParser(strict)の責務で、
+      # Parser がパース段階のエラーに変換する
+      assert {:error, message} = Parser.parse(spec, ["run", "--jobs", "four"])
+      assert message =~ "--jobs"
     end
 
     test "command option overrides replace values and doc", %{spec: spec} do
