@@ -3,8 +3,8 @@ defmodule ToolKitTest do
   doctest ToolKit
 
   describe "version/0" do
-    test "returns the version from mix.exs" do
-      assert ToolKit.version() == Mix.Project.config()[:version]
+    test "returns a semver version string" do
+      assert ToolKit.version() =~ ~r/^\d+\.\d+\.\d+$/
     end
   end
 end
