@@ -45,6 +45,32 @@ defmodule ToolKit.CLI.SpecTest do
       end
     end
 
+    test "integer options derive strict switches and render a VALUE placeholder" do
+      spec = %Spec{
+        tool_name: "demo",
+        tool_summary: "demo tool",
+        option_catalog: %{
+          help: %{type: :boolean, alias: :h, values: nil, doc: "help"},
+          jobs: %{type: :integer, alias: nil, values: nil, doc: "並列数"}
+        },
+        global_option_names: [:help],
+        commands: [
+          %{
+            name: "run",
+            aliases: [],
+            usage: ["run"],
+            summary: "run",
+            options: [:jobs],
+            examples: ["run --jobs 4"]
+          }
+        ]
+      }
+
+      assert {:jobs, :integer} in Spec.strict_switches(spec)
+      assert Spec.render_command_help(spec, "run") =~ "--jobs VALUE"
+      assert Spec.validate_opts(spec, "run", jobs: 4) == :ok
+    end
+
     test "command option overrides replace values and doc", %{spec: spec} do
       list_command = Spec.find_command(spec, "list")
       sort = spec |> Spec.options_for(list_command) |> Enum.find(&(&1.name == :sort))

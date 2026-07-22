@@ -21,7 +21,7 @@ defmodule ToolKit.CLI.Spec do
   defstruct [:tool_name, :tool_summary, :option_catalog, :global_option_names, :commands]
 
   @type option_def :: %{
-          type: :boolean | :string,
+          type: :boolean | :string | :integer,
           alias: atom() | nil,
           values: [String.t()] | nil,
           doc: String.t()
@@ -78,7 +78,7 @@ defmodule ToolKit.CLI.Spec do
   end
 
   @doc "OptionParser の strict リスト(全オプションの和集合)"
-  @spec strict_switches(t()) :: [{atom(), :boolean | :string}]
+  @spec strict_switches(t()) :: [{atom(), :boolean | :string | :integer}]
   def strict_switches(%__MODULE__{option_catalog: catalog}) do
     Enum.map(catalog, fn {name, %{type: type}} -> {name, type} end)
   end
@@ -206,7 +206,8 @@ defmodule ToolKit.CLI.Spec do
   end
 
   defp render_option_line(option) do
-    value = if option.type == :string, do: " #{render_values(option)}", else: ""
+    # 値を取る型(string / integer)には VALUE プレースホルダを表示する
+    value = if option.type == :boolean, do: "", else: " #{render_values(option)}"
 
     if single_char_name?(option.name) do
       "  -#{option.name}#{value}  #{option.doc}"
