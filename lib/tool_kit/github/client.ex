@@ -38,6 +38,8 @@ defmodule ToolKit.GitHub.Client do
   @default_base_url "https://api.github.com"
   @default_receive_timeout 30_000
   @default_user_agent "elixir-tool-kit"
+  # REST API の日付バージョン(X-GitHub-Api-Version)
+  @api_version "2022-11-28"
 
   @type token_provider :: (-> {:ok, String.t()} | {:error, term()})
 
@@ -319,8 +321,11 @@ defmodule ToolKit.GitHub.Client do
   @spec gh_cli_token() :: {:ok, String.t()} | {:error, String.t()}
   def gh_cli_token do
     case System.cmd("gh", ["auth", "token"], stderr_to_stdout: true) do
-      {token, 0} -> {:ok, String.trim(token)}
-      {_output, _exit_code} -> {:error, "GitHub CLI authentication failed. Run 'gh auth login'"}
+      {token, 0} ->
+        {:ok, String.trim(token)}
+
+      {output, _exit_code} ->
+        {:error, "GitHub CLI authentication failed (run 'gh auth login'): #{String.trim(output)}"}
     end
   rescue
     ErlangError -> {:error, "GitHub CLI (gh) not found in PATH"}
@@ -363,7 +368,8 @@ defmodule ToolKit.GitHub.Client do
 
   defp build_headers(token, opts) do
     [
-      {"accept", "application/vnd.github.v3+json"},
+      {"accept", "application/vnd.github+json"},
+      {"x-github-api-version", @api_version},
       {"authorization", "Bearer " <> token},
       {"user-agent", Keyword.get(opts, :user_agent, @default_user_agent)}
     ]
@@ -373,11 +379,12 @@ defmodule ToolKit.GitHub.Client do
   defp extract_error_message(body, status) when is_binary(body), do: "#{status} - #{body}"
   defp extract_error_message(_body, status), do: "HTTP #{status}"
 
-  # クエリパラメータ(nil の値は落とす)を opts の :params に載せる
+  # クエリパラメータ(nil の値は落とす)を opts の :params にマージする。
+  # 呼び出し元が :params を渡していた場合は保持し、同名キーはヘルパ側を優先する
   defp put_params(opts, params) do
     case Enum.reject(params, fn {_key, value} -> is_nil(value) end) do
       [] -> opts
-      present -> Keyword.put(opts, :params, present)
+      present -> Keyword.update(opts, :params, present, &Keyword.merge(&1, present))
     end
   end
 

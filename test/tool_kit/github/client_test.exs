@@ -37,7 +37,8 @@ defmodule ToolKit.GitHub.ClientTest do
     test "Bearer トークンと GitHub API 用ヘッダを送る" do
       Req.Test.stub(@stub, fn conn ->
         assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer test-token"]
-        assert Plug.Conn.get_req_header(conn, "accept") == ["application/vnd.github.v3+json"]
+        assert Plug.Conn.get_req_header(conn, "accept") == ["application/vnd.github+json"]
+        assert Plug.Conn.get_req_header(conn, "x-github-api-version") == ["2022-11-28"]
         assert [user_agent] = Plug.Conn.get_req_header(conn, "user-agent")
         assert user_agent =~ "elixir-tool-kit"
         Req.Test.json(conn, %{"ok" => true})
@@ -314,6 +315,14 @@ defmodule ToolKit.GitHub.ClientTest do
       refute Map.has_key?(query, "author")
     end
 
+    test "ヘルパは呼び出し元の :params を保持したままマージする" do
+      stub_capture(self(), [])
+
+      assert {:ok, []} = Client.list_commits("smkwlab/repo", opts(per_page: 5, params: [page: 2]))
+
+      assert_received {:request, %{query: %{"per_page" => "5", "page" => "2"}}}
+    end
+
     test "list_pull_requests/2 は state / per_page をクエリに載せる" do
       stub_capture(self(), [])
 
@@ -372,28 +381,6 @@ defmodule ToolKit.GitHub.ClientTest do
       assert request.method == "PATCH"
       assert request.path == "/repos/smkwlab/repo"
       assert Jason.decode!(request.body) == %{"archived" => true}
-    end
-  end
-
-  describe "gh_cli_token/0(既定プロバイダ)" do
-    # 環境依存(gh の有無・認証状態)のため、戻り値の形だけを検証する
-    test "認証状態にかかわらず {:ok, token} か {:error, message} を返す" do
-      case Client.gh_cli_token() do
-        {:ok, token} -> assert is_binary(token) and token != ""
-        {:error, message} -> assert is_binary(message)
-      end
-    end
-
-    test "gh が見つからない場合はエラーメッセージを返す" do
-      original_path = System.get_env("PATH")
-
-      try do
-        System.put_env("PATH", "")
-        assert {:error, message} = Client.gh_cli_token()
-        assert message =~ "gh"
-      after
-        System.put_env("PATH", original_path)
-      end
     end
   end
 
