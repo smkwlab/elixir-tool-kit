@@ -89,13 +89,11 @@ defmodule ToolKit.Config.Layers do
   """
   @spec load_file(String.t()) :: {:ok, map()} | {:error, {:parse_error, String.t()}}
   def load_file(path) do
-    if File.exists?(path) do
-      case YamlElixir.read_from_file(path) do
-        {:ok, config} when is_map(config) -> {:ok, config}
-        _ -> {:error, {:parse_error, path}}
-      end
-    else
-      {:ok, %{}}
+    # 存在チェックせず直接読む(TOCTOU 回避)。不存在はエラー型で判別する
+    case YamlElixir.read_from_file(path) do
+      {:ok, config} when is_map(config) -> {:ok, config}
+      {:error, %YamlElixir.FileNotFoundError{}} -> {:ok, %{}}
+      _ -> {:error, {:parse_error, path}}
     end
   end
 
@@ -133,7 +131,9 @@ defmodule ToolKit.Config.Layers do
   レイヤ(map のリスト)を先頭から順に後勝ちでマージする。
 
   - 後のレイヤの nil 値は既存値を上書きしない(「未設定」を表す。
-    キー自体が無ければ nil のまま入り、defaults の nil キーは保持される)
+    キー自体が無ければ nil のまま入り、defaults の nil キーは保持される)。
+    nil で既存値をリセットする手段は意図的に提供しない(無効化が必要な設定は
+    `false` や `0` など明示的な値で表現するのがツール側の規約)
   - 両方が map の値は再帰マージ(env の 1 変数がファイルの入れ子設定を
     丸ごと潰さない)
   - それ以外の値は置き換え

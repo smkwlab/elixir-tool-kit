@@ -5,6 +5,8 @@ defmodule ToolKit.Config.LayersEnvTest do
   alias ToolKit.Config.Layers
 
   @prefix "TK_LAYERS_TEST"
+  # 新しい環境変数を使うテストを追加したら、必ずここにも追加すること
+  # (setup / on_exit のクリーンアップ対象は本リストで管理している)
   @env_vars [
     "#{@prefix}_CSV_PATH",
     "#{@prefix}_GITHUB_ORG",
