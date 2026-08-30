@@ -34,7 +34,7 @@ defmodule ToolKit.MixProject do
     [
       {:jason, "~> 1.4"},
       {:yaml_elixir, "~> 2.9"},
-      {:req, "~> 0.5"},
+      {:req, "~> 0.7"},
       # Req.Test(Plug ベースの HTTP スタブ)用
       {:plug, "~> 1.16", only: [:test]},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
